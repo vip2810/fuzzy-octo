@@ -1,7 +1,7 @@
 const DEFAULTS = {
   owner: "vip2810",
   repo: "fuzzy-octo",
-  branch: "main",
+  branch: "claude/jamstack-karaoke-site-fCM6p",
 };
 
 export interface RepoConfig {
