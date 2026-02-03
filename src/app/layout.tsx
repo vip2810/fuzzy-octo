@@ -16,19 +16,29 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="antialiased min-h-screen">
-        <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-white/10">
-          <nav className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3">
-              <span className="text-3xl">🎤</span>
-              <span className="text-xl font-bold text-accent-light">
-                Sri Lankan Karaoke
+        <header className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl border-b border-white/5">
+          <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-3 group">
+              <span className="text-3xl group-hover:scale-110 transition-transform">
+                🎤
               </span>
+              <div>
+                <span className="text-xl font-bold bg-gradient-to-r from-accent-light to-accent bg-clip-text text-transparent">
+                  Sri Lankan Karaoke
+                </span>
+              </div>
+            </Link>
+            <Link
+              href="/admin"
+              className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm text-gray-400 hover:text-white transition-all"
+            >
+              Admin
             </Link>
           </nav>
         </header>
-        <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
-        <footer className="border-t border-white/10 mt-16">
-          <div className="max-w-7xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
+        <main className="max-w-7xl mx-auto px-6 py-10">{children}</main>
+        <footer className="border-t border-white/5 mt-20">
+          <div className="max-w-7xl mx-auto px-6 py-8 text-center text-sm text-gray-600">
             Sri Lankan Karaoke &mdash; Celebrating the golden voices of Sri
             Lanka
           </div>

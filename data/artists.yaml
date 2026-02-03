@@ -1,30 +1,30 @@
 artists:
   - id: jothipala
     name: H.R. Jothipala
-    image: /images/artists/jothipala.svg
+    image: https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/HR_Jothipala.jpg/440px-HR_Jothipala.jpg
     description: Legendary Sri Lankan playback singer, known as the golden voice of Sinhala cinema.
 
   - id: victor
     name: Victor Rathnayake
-    image: /images/artists/victor.svg
+    image: https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Victor_Ratnayake_Performs_at_DIFF.jpg/440px-Victor_Ratnayake_Performs_at_DIFF.jpg
     description: Iconic Sri Lankan musician and composer, celebrated for his poetic lyrics and melodies.
 
   - id: clarence
     name: Clarence Wijewardena
-    image: /images/artists/clarence.svg
+    image: https://upload.wikimedia.org/wikipedia/en/5/5d/Clarence_wijewardena.jpg
     description: Pioneer of modern Sinhala music, blending Western and Eastern musical styles.
 
   - id: nanda
     name: Nanda Malini
-    image: /images/artists/nanda.svg
+    image: https://upload.wikimedia.org/wikipedia/commons/5/5d/Nanda_Malini.jpg
     description: Renowned Sri Lankan female vocalist, known for her powerful and emotive voice.
 
   - id: sunil
     name: Sunil Edirisinghe
-    image: /images/artists/sunil.svg
+    image: https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Sunil_Edirisinghe_Performs_at_DIFF.jpg/440px-Sunil_Edirisinghe_Performs_at_DIFF.jpg
     description: Beloved Sinhala singer known for romantic and melodic songs.
 
   - id: amaradeva
     name: W.D. Amaradeva
-    image: /images/artists/amaradeva.svg
+    image: https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Amaradeva.jpg/440px-Amaradeva.jpg
     description: Maestro of Sri Lankan music, awarded the title Kala Keerthi for his contributions.
