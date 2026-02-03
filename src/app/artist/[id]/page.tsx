@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { getArtists, getArtist, getSongsByArtist } from "@/lib/data";
+import { assetPath } from "@/lib/basePath";
 import SongList from "@/components/SongList";
 import { notFound } from "next/navigation";
 
@@ -23,18 +25,18 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
   return (
     <div>
       <div className="mb-8">
-        <a
+        <Link
           href="/"
           className="text-accent hover:text-accent-light transition-colors text-sm"
         >
           &larr; Back to Artists
-        </a>
+        </Link>
       </div>
 
       <div className="flex flex-col md:flex-row gap-8 mb-10">
         <div className="flex-shrink-0">
           <img
-            src={artist.image}
+            src={assetPath(artist.image)}
             alt={artist.name}
             className="w-48 h-48 rounded-2xl object-cover shadow-lg"
           />

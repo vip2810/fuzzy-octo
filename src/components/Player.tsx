@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 interface PlayerProps {
@@ -22,12 +23,12 @@ export default function Player({
       transition={{ duration: 0.4 }}
     >
       <div className="mb-6">
-        <a
+        <Link
           href={`/artist/${artistId}`}
           className="text-accent hover:text-accent-light transition-colors text-sm"
         >
           &larr; Back to {artistName}
-        </a>
+        </Link>
       </div>
 
       <h1 className="text-3xl font-bold text-white mb-2">{title}</h1>
@@ -44,12 +45,12 @@ export default function Player({
       </div>
 
       <div className="mt-8 flex gap-4">
-        <a
+        <Link
           href={`/artist/${artistId}`}
           className="px-6 py-3 rounded-xl bg-card-bg hover:bg-card-hover transition-colors text-white font-medium"
         >
           More from {artistName}
-        </a>
+        </Link>
       </div>
     </motion.div>
   );
