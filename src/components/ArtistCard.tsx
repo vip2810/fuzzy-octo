@@ -29,6 +29,9 @@ export default function ArtistCard({ artist, index }: ArtistCardProps) {
             alt={artist.name}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             loading="lazy"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><rect width="400" height="400" fill="#111128"/><text x="200" y="220" font-size="120" fill="#e94560" text-anchor="middle" font-family="sans-serif">${artist.name.charAt(0)}</text></svg>`)}`;
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-4">
