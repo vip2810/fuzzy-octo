@@ -1,6 +1,14 @@
-const REPO_OWNER = "vip2810";
-const REPO_NAME = "fuzzy-octo";
-const BRANCH = "main";
+const DEFAULTS = {
+  owner: "vip2810",
+  repo: "fuzzy-octo",
+  branch: "main",
+};
+
+export interface RepoConfig {
+  owner: string;
+  repo: string;
+  branch: string;
+}
 
 interface GitHubFileResponse {
   content: string;
@@ -11,6 +19,21 @@ interface GitHubFileResponse {
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("github_token");
+}
+
+export function getRepoConfig(): RepoConfig {
+  if (typeof window === "undefined") return DEFAULTS;
+  try {
+    const saved = localStorage.getItem("github_repo_config");
+    if (saved) return JSON.parse(saved);
+  } catch {
+    // ignore
+  }
+  return DEFAULTS;
+}
+
+export function setRepoConfig(config: RepoConfig) {
+  localStorage.setItem("github_repo_config", JSON.stringify(config));
 }
 
 export function isAuthenticated(): boolean {
@@ -46,11 +69,15 @@ async function githubFetch(
 export async function getFileContent(
   path: string
 ): Promise<{ content: string; sha: string }> {
+  const { owner, repo, branch } = getRepoConfig();
   const res = await githubFetch(
-    `/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${BRANCH}`
+    `/repos/${owner}/${repo}/contents/${path}?ref=${branch}`
   );
   if (!res.ok) {
-    throw new Error(`Failed to fetch ${path}: ${res.statusText}`);
+    const body = await res.json().catch(() => ({}));
+    throw new Error(
+      `Failed to fetch ${path}: ${body.message || res.statusText} (branch: ${branch})`
+    );
   }
   const data: GitHubFileResponse = await res.json();
   const content = atob(data.content.replace(/\n/g, ""));
@@ -63,20 +90,21 @@ export async function updateFile(
   sha: string,
   message: string
 ): Promise<void> {
+  const { owner, repo, branch } = getRepoConfig();
   const res = await githubFetch(
-    `/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`,
+    `/repos/${owner}/${repo}/contents/${path}`,
     {
       method: "PUT",
       body: JSON.stringify({
         message,
         content: btoa(unescape(encodeURIComponent(content))),
         sha,
-        branch: BRANCH,
+        branch,
       }),
     }
   );
   if (!res.ok) {
-    const err = await res.json();
+    const err = await res.json().catch(() => ({}));
     throw new Error(
       `Failed to update ${path}: ${err.message || res.statusText}`
     );
@@ -89,5 +117,17 @@ export async function validateToken(): Promise<boolean> {
     return res.ok;
   } catch {
     return false;
+  }
+}
+
+export async function listBranches(): Promise<string[]> {
+  const { owner, repo } = getRepoConfig();
+  try {
+    const res = await githubFetch(`/repos/${owner}/${repo}/branches?per_page=100`);
+    if (!res.ok) return [];
+    const data: Array<{ name: string }> = await res.json();
+    return data.map((b) => b.name);
+  } catch {
+    return [];
   }
 }

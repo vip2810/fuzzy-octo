@@ -9,7 +9,11 @@ import {
   validateToken,
   getFileContent,
   updateFile,
+  getRepoConfig,
+  setRepoConfig,
+  listBranches,
 } from "@/lib/github";
+import type { RepoConfig } from "@/lib/github";
 
 interface Artist {
   id: string;
@@ -26,7 +30,7 @@ interface Song {
   order: number;
 }
 
-type Tab = "artists" | "songs";
+type Tab = "artists" | "songs" | "settings";
 
 function slugify(text: string): string {
   return text
@@ -105,6 +109,9 @@ function parseSongsYaml(content: string): Song[] {
 
 function TokenForm({ onSuccess }: { onSuccess: () => void }) {
   const [token, setTokenValue] = useState("");
+  const [owner, setOwner] = useState(() => getRepoConfig().owner);
+  const [repo, setRepo] = useState(() => getRepoConfig().repo);
+  const [branch, setBranch] = useState(() => getRepoConfig().branch);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -113,6 +120,7 @@ function TokenForm({ onSuccess }: { onSuccess: () => void }) {
     setLoading(true);
     setError("");
     setToken(token);
+    setRepoConfig({ owner, repo, branch });
     const valid = await validateToken();
     if (valid) {
       onSuccess();
@@ -124,21 +132,67 @@ function TokenForm({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <div className="max-w-lg mx-auto mt-20">
+    <div className="max-w-lg mx-auto mt-12">
       <div className="bg-card-bg rounded-2xl p-8 border border-white/10">
         <h2 className="text-2xl font-bold text-white mb-2">Admin Login</h2>
         <p className="text-gray-400 mb-6 text-sm">
-          Enter your GitHub Personal Access Token with <code>repo</code> scope
-          to manage content.
+          Connect to your GitHub repo to manage karaoke content.
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="password"
-            value={token}
-            onChange={(e) => setTokenValue(e.target.value)}
-            placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-            className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder-gray-500 focus:border-accent focus:outline-none"
-          />
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">
+              GitHub Personal Access Token
+            </label>
+            <input
+              type="password"
+              value={token}
+              onChange={(e) => setTokenValue(e.target.value)}
+              placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+              className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder-gray-500 focus:border-accent focus:outline-none"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">
+                Repo Owner
+              </label>
+              <input
+                value={owner}
+                onChange={(e) => setOwner(e.target.value)}
+                placeholder="vip2810"
+                className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder-gray-500 focus:border-accent focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">
+                Repo Name
+              </label>
+              <input
+                value={repo}
+                onChange={(e) => setRepo(e.target.value)}
+                placeholder="fuzzy-octo"
+                className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder-gray-500 focus:border-accent focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">
+              Branch
+            </label>
+            <input
+              value={branch}
+              onChange={(e) => setBranch(e.target.value)}
+              placeholder="main"
+              className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder-gray-500 focus:border-accent focus:outline-none"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              The branch where your data/ folder lives (e.g. main,
+              claude/jamstack-karaoke-site-fCM6p)
+            </p>
+          </div>
+
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <button
             type="submit"
@@ -153,8 +207,116 @@ function TokenForm({ onSuccess }: { onSuccess: () => void }) {
             <strong className="text-gray-300">How to get a token:</strong>
             <br />
             GitHub &rarr; Settings &rarr; Developer settings &rarr; Personal
-            access tokens &rarr; Tokens (classic) &rarr; Generate new token with{" "}
-            <code>repo</code> scope.
+            access tokens &rarr; Tokens (classic) &rarr; Generate new token
+            with <code className="text-accent">repo</code> scope.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SettingsPanel({ onSave }: { onSave: () => void }) {
+  const config = getRepoConfig();
+  const [owner, setOwner] = useState(config.owner);
+  const [repo, setRepo] = useState(config.repo);
+  const [branch, setBranch] = useState(config.branch);
+  const [branches, setBranches] = useState<string[]>([]);
+  const [loadingBranches, setLoadingBranches] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  async function fetchBranches() {
+    setLoadingBranches(true);
+    const list = await listBranches();
+    setBranches(list);
+    setLoadingBranches(false);
+  }
+
+  useEffect(() => {
+    fetchBranches();
+  }, []);
+
+  function handleSave() {
+    setRepoConfig({ owner, repo, branch });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+    onSave();
+  }
+
+  return (
+    <div className="max-w-xl">
+      <h3 className="text-lg font-bold text-white mb-4">
+        Repository Settings
+      </h3>
+      <p className="text-sm text-gray-400 mb-6">
+        Configure which GitHub repository and branch to read/write data from.
+      </p>
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">
+              Owner
+            </label>
+            <input
+              value={owner}
+              onChange={(e) => setOwner(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:border-accent focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">
+              Repository
+            </label>
+            <input
+              value={repo}
+              onChange={(e) => setRepo(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:border-accent focus:outline-none"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm text-gray-400 mb-1">
+            Branch
+          </label>
+          {branches.length > 0 ? (
+            <select
+              value={branch}
+              onChange={(e) => setBranch(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:border-accent focus:outline-none"
+            >
+              {branches.map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              value={branch}
+              onChange={(e) => setBranch(e.target.value)}
+              placeholder="main"
+              className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder-gray-500 focus:border-accent focus:outline-none"
+            />
+          )}
+          {loadingBranches && (
+            <p className="text-xs text-gray-500 mt-1">Loading branches...</p>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSave}
+            className="px-6 py-3 rounded-xl bg-accent hover:bg-accent-light transition-colors text-white font-semibold"
+          >
+            Save & Reload Data
+          </button>
+          {saved && (
+            <span className="text-green-400 text-sm">Settings saved!</span>
+          )}
+        </div>
+        <div className="mt-4 p-4 rounded-xl bg-surface/20 border border-white/5">
+          <p className="text-xs text-gray-500">
+            <strong className="text-gray-400">Current config:</strong>{" "}
+            {config.owner}/{config.repo} @ {config.branch}
           </p>
         </div>
       </div>
@@ -247,7 +409,9 @@ function SongForm({
   onCancel: () => void;
 }) {
   const [title, setTitle] = useState(song?.title || "");
-  const [artistId, setArtistId] = useState(song?.artistId || artists[0]?.id || "");
+  const [artistId, setArtistId] = useState(
+    song?.artistId || artists[0]?.id || ""
+  );
   const [youtube, setYoutube] = useState(song?.youtube || "");
   const [order, setOrder] = useState(song?.order || 1);
 
@@ -372,7 +536,7 @@ export default function AdminPage() {
     }
   }, [loadData]);
 
-  function showMessage(msg: string) {
+  function showMsg(msg: string) {
     setMessage(msg);
     setTimeout(() => setMessage(""), 3000);
   }
@@ -390,7 +554,7 @@ export default function AdminPage() {
       setArtists(updated);
       const fresh = await getFileContent("data/artists.yaml");
       setArtistsSha(fresh.sha);
-      showMessage("Artists saved & committed!");
+      showMsg("Artists saved & committed!");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
     } finally {
@@ -411,7 +575,7 @@ export default function AdminPage() {
       setSongs(updated);
       const fresh = await getFileContent("data/songs.yaml");
       setSongsSha(fresh.sha);
-      showMessage("Songs saved & committed!");
+      showMsg("Songs saved & committed!");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
     } finally {
@@ -460,7 +624,10 @@ export default function AdminPage() {
 
   function handleMoveSong(songId: string, direction: "up" | "down") {
     const artistSongs = songs
-      .filter((s) => s.artistId === songs.find((x) => x.id === songId)?.artistId)
+      .filter(
+        (s) =>
+          s.artistId === songs.find((x) => x.id === songId)?.artistId
+      )
       .sort((a, b) => a.order - b.order);
     const idx = artistSongs.findIndex((s) => s.id === songId);
     if (direction === "up" && idx > 0) {
@@ -480,20 +647,39 @@ export default function AdminPage() {
   }
 
   if (!authed) {
-    return <TokenForm onSuccess={() => { setAuthed(true); loadData(); }} />;
+    return (
+      <TokenForm
+        onSuccess={() => {
+          setAuthed(true);
+          loadData();
+        }}
+      />
+    );
   }
+
+  const config = getRepoConfig();
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-2">
         <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
         <button
-          onClick={() => { clearToken(); setAuthed(false); }}
+          onClick={() => {
+            clearToken();
+            setAuthed(false);
+          }}
           className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-gray-400 text-sm"
         >
           Logout
         </button>
       </div>
+      <p className="text-sm text-gray-500 mb-8">
+        Connected to{" "}
+        <span className="text-gray-400">
+          {config.owner}/{config.repo}
+        </span>{" "}
+        @ <span className="text-accent">{config.branch}</span>
+      </p>
 
       <AnimatePresence>
         {message && (
@@ -514,7 +700,10 @@ export default function AdminPage() {
             className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400"
           >
             {error}
-            <button onClick={() => setError("")} className="ml-4 underline">
+            <button
+              onClick={() => setError("")}
+              className="ml-4 underline"
+            >
               Dismiss
             </button>
           </motion.div>
@@ -523,7 +712,7 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 mb-8 bg-card-bg rounded-xl p-1">
-        {(["artists", "songs"] as Tab[]).map((t) => (
+        {(["artists", "songs", "settings"] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -533,7 +722,11 @@ export default function AdminPage() {
                 : "text-gray-400 hover:text-white"
             }`}
           >
-            {t} ({t === "artists" ? artists.length : songs.length})
+            {t === "artists"
+              ? `Artists (${artists.length})`
+              : t === "songs"
+                ? `Songs (${songs.length})`
+                : "Settings"}
           </button>
         ))}
       </div>
@@ -545,12 +738,20 @@ export default function AdminPage() {
         </div>
       ) : (
         <>
+          {/* Settings Tab */}
+          {tab === "settings" && (
+            <SettingsPanel onSave={loadData} />
+          )}
+
           {/* Artists Tab */}
           {tab === "artists" && (
             <div>
               <div className="flex justify-end mb-4">
                 <button
-                  onClick={() => { setShowNewArtist(true); setEditingArtist(null); }}
+                  onClick={() => {
+                    setShowNewArtist(true);
+                    setEditingArtist(null);
+                  }}
                   disabled={saving}
                   className="px-6 py-3 rounded-xl bg-accent hover:bg-accent-light transition-colors text-white font-semibold disabled:opacity-50"
                 >
@@ -564,7 +765,9 @@ export default function AdminPage() {
                   animate={{ opacity: 1, height: "auto" }}
                   className="mb-6 bg-card-bg rounded-2xl p-6 border border-white/10"
                 >
-                  <h3 className="text-lg font-bold text-white mb-4">New Artist</h3>
+                  <h3 className="text-lg font-bold text-white mb-4">
+                    New Artist
+                  </h3>
                   <ArtistForm
                     onSave={handleSaveArtist}
                     onCancel={() => setShowNewArtist(false)}
@@ -579,23 +782,23 @@ export default function AdminPage() {
                     className="bg-card-bg rounded-xl p-4 border border-white/5 flex items-center gap-4"
                   >
                     <img
-                      src={artist.image.startsWith("http") ? artist.image : artist.image}
+                      src={artist.image}
                       alt={artist.name}
-                      className="w-14 h-14 rounded-xl object-cover"
+                      className="w-14 h-14 rounded-xl object-cover bg-surface"
                     />
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-white">{artist.name}</h3>
+                      <h3 className="font-semibold text-white">
+                        {artist.name}
+                      </h3>
                       <p className="text-sm text-gray-400 truncate">
                         {artist.description}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {songs.filter((s) => s.artistId === artist.id).length} songs
+                        {songs.filter((s) => s.artistId === artist.id).length}{" "}
+                        songs
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      {editingArtist?.id === artist.id ? (
-                        <div className="absolute inset-0 z-10" />
-                      ) : null}
                       <button
                         onClick={() => {
                           setEditingArtist(artist);
@@ -640,7 +843,10 @@ export default function AdminPage() {
             <div>
               <div className="flex justify-end mb-4">
                 <button
-                  onClick={() => { setShowNewSong(true); setEditingSong(null); }}
+                  onClick={() => {
+                    setShowNewSong(true);
+                    setEditingSong(null);
+                  }}
                   disabled={saving || artists.length === 0}
                   className="px-6 py-3 rounded-xl bg-accent hover:bg-accent-light transition-colors text-white font-semibold disabled:opacity-50"
                 >
@@ -654,7 +860,9 @@ export default function AdminPage() {
                   animate={{ opacity: 1, height: "auto" }}
                   className="mb-6 bg-card-bg rounded-2xl p-6 border border-white/10"
                 >
-                  <h3 className="text-lg font-bold text-white mb-4">New Song</h3>
+                  <h3 className="text-lg font-bold text-white mb-4">
+                    New Song
+                  </h3>
                   <SongForm
                     artists={artists}
                     onSave={handleSaveSong}
@@ -693,15 +901,21 @@ export default function AdminPage() {
                           </div>
                           <div className="flex gap-1">
                             <button
-                              onClick={() => handleMoveSong(song.id, "up")}
+                              onClick={() =>
+                                handleMoveSong(song.id, "up")
+                              }
                               disabled={idx === 0 || saving}
                               className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 disabled:opacity-30 transition-colors flex items-center justify-center"
                             >
                               &#8593;
                             </button>
                             <button
-                              onClick={() => handleMoveSong(song.id, "down")}
-                              disabled={idx === artistSongs.length - 1 || saving}
+                              onClick={() =>
+                                handleMoveSong(song.id, "down")
+                              }
+                              disabled={
+                                idx === artistSongs.length - 1 || saving
+                              }
                               className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 disabled:opacity-30 transition-colors flex items-center justify-center"
                             >
                               &#8595;
