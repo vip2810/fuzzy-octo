@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import yaml from "js-yaml";
 import {
   isAuthenticated,
   setToken,
@@ -39,71 +40,44 @@ function slugify(text: string): string {
 }
 
 function artistsToYaml(artists: Artist[]): string {
-  let yaml = "artists:\n";
-  for (const a of artists) {
-    yaml += `  - id: ${a.id}\n`;
-    yaml += `    name: "${a.name}"\n`;
-    yaml += `    image: ${a.image}\n`;
-    yaml += `    description: "${a.description}"\n\n`;
-  }
-  return yaml;
+  return yaml.dump({ artists }, { lineWidth: -1, quotingType: '"', forceQuotes: false });
 }
 
 function songsToYaml(songs: Song[]): string {
-  let yaml = "songs:\n";
-  for (const s of songs) {
-    yaml += `  - id: ${s.id}\n`;
-    yaml += `    artistId: ${s.artistId}\n`;
-    yaml += `    title: "${s.title}"\n`;
-    yaml += `    youtube: ${s.youtube}\n`;
-    yaml += `    order: ${s.order}\n\n`;
-  }
-  return yaml;
+  return yaml.dump({ songs }, { lineWidth: -1, quotingType: '"', forceQuotes: false });
 }
 
 function parseArtistsYaml(content: string): Artist[] {
-  const artists: Artist[] = [];
-  const blocks = content.split(/\n\s*-\s+id:\s*/).slice(1);
-  for (const block of blocks) {
-    const lines = ("id: " + block).split("\n").filter((l) => l.trim());
-    const obj: Record<string, string> = {};
-    for (const line of lines) {
-      const match = line.match(/^\s*(\w+):\s*"?(.+?)"?\s*$/);
-      if (match) obj[match[1]] = match[2].trim();
-    }
-    if (obj.id && obj.name) {
-      artists.push({
-        id: obj.id,
-        name: obj.name,
-        image: obj.image || "",
-        description: obj.description || "",
-      });
-    }
+  try {
+    const data = yaml.load(content) as { artists?: Artist[] } | null;
+    if (!data?.artists || !Array.isArray(data.artists)) return [];
+    return data.artists.map((a) => ({
+      id: String(a.id || ""),
+      name: String(a.name || ""),
+      image: String(a.image || ""),
+      description: String(a.description || ""),
+    })).filter((a) => a.id && a.name);
+  } catch {
+    console.error("Failed to parse artists YAML");
+    return [];
   }
-  return artists;
 }
 
 function parseSongsYaml(content: string): Song[] {
-  const songs: Song[] = [];
-  const blocks = content.split(/\n\s*-\s+id:\s*/).slice(1);
-  for (const block of blocks) {
-    const lines = ("id: " + block).split("\n").filter((l) => l.trim());
-    const obj: Record<string, string> = {};
-    for (const line of lines) {
-      const match = line.match(/^\s*(\w+):\s*"?(.+?)"?\s*$/);
-      if (match) obj[match[1]] = match[2].trim();
-    }
-    if (obj.id && obj.title) {
-      songs.push({
-        id: obj.id,
-        artistId: obj.artistId || "",
-        title: obj.title,
-        youtube: obj.youtube || "",
-        order: parseInt(obj.order || "1"),
-      });
-    }
+  try {
+    const data = yaml.load(content) as { songs?: Song[] } | null;
+    if (!data?.songs || !Array.isArray(data.songs)) return [];
+    return data.songs.map((s) => ({
+      id: String(s.id || ""),
+      artistId: String(s.artistId || ""),
+      title: String(s.title || ""),
+      youtube: String(s.youtube || ""),
+      order: Number(s.order) || 1,
+    })).filter((s) => s.id && s.title);
+  } catch {
+    console.error("Failed to parse songs YAML");
+    return [];
   }
-  return songs;
 }
 
 function extractYoutubeId(url: string): string | null {
@@ -785,21 +759,31 @@ export default function AdminPage() {
   }
 
   async function saveArtists(updated: Artist[]): Promise<string> {
-    const yaml = artistsToYaml(updated);
-    await updateFile("data/artists.yaml", yaml, artistsSha, "Update artists via dashboard");
-    setArtists(updated);
+    const yamlContent = artistsToYaml(updated);
+    const { commitSha } = await updateFile("data/artists.yaml", yamlContent, artistsSha, "Update artists via dashboard");
+    // Verify by re-reading from GitHub
     const fresh = await getFileContent("data/artists.yaml");
+    const verified = parseArtistsYaml(fresh.content);
+    if (verified.length !== updated.length) {
+      throw new Error(`Save verification failed: expected ${updated.length} artists, got ${verified.length}. Check the commit at GitHub.`);
+    }
+    setArtists(verified);
     setArtistsSha(fresh.sha);
-    return fresh.sha;
+    return commitSha;
   }
 
   async function saveSongs(updated: Song[]): Promise<string> {
-    const yaml = songsToYaml(updated);
-    await updateFile("data/songs.yaml", yaml, songsSha, "Update songs via dashboard");
-    setSongs(updated);
+    const yamlContent = songsToYaml(updated);
+    const { commitSha } = await updateFile("data/songs.yaml", yamlContent, songsSha, "Update songs via dashboard");
+    // Verify by re-reading from GitHub
     const fresh = await getFileContent("data/songs.yaml");
+    const verified = parseSongsYaml(fresh.content);
+    if (verified.length !== updated.length) {
+      throw new Error(`Save verification failed: expected ${updated.length} songs, got ${verified.length}. Check the commit at GitHub.`);
+    }
+    setSongs(verified);
     setSongsSha(fresh.sha);
-    return fresh.sha;
+    return commitSha;
   }
 
   async function handleSaveArtist(artist: Artist) {
@@ -812,7 +796,7 @@ export default function AdminPage() {
       await saveArtists(updated);
       setEditingArtistId(null);
       setShowNewArtist(false);
-      showMsg("Artist saved!");
+      showMsg("Artist saved! Site will rebuild in ~1-2 min.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
     } finally {
@@ -826,7 +810,7 @@ export default function AdminPage() {
     try {
       await saveArtists(artists.filter((a) => a.id !== id));
       await saveSongs(songs.filter((s) => s.artistId !== id));
-      showMsg("Artist deleted!");
+      showMsg("Artist deleted! Site will rebuild in ~1-2 min.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete");
     } finally {
@@ -844,7 +828,7 @@ export default function AdminPage() {
       await saveSongs(updated);
       setEditingSongId(null);
       setShowNewSong(false);
-      showMsg("Song saved!");
+      showMsg("Song saved! Site will rebuild in ~1-2 min.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
     } finally {
@@ -857,7 +841,7 @@ export default function AdminPage() {
     setSaving(true);
     try {
       await saveSongs(songs.filter((s) => s.id !== id));
-      showMsg("Song deleted!");
+      showMsg("Song deleted! Site will rebuild in ~1-2 min.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete");
     } finally {
@@ -896,7 +880,7 @@ export default function AdminPage() {
         await saveArtists([...artists, ...newArtists]);
       }
       await saveSongs([...songs, ...newSongs]);
-      showMsg(`Imported ${newSongs.length} songs${newArtists.length > 0 ? ` and ${newArtists.length} new artists` : ""}!`);
+      showMsg(`Imported ${newSongs.length} songs${newArtists.length > 0 ? ` and ${newArtists.length} new artists` : ""}! Site will rebuild in ~1-2 min.`);
       setTab("songs");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to import");

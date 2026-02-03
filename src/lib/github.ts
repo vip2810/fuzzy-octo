@@ -66,6 +66,19 @@ async function githubFetch(
   });
 }
 
+function base64ToUtf8(base64: string): string {
+  const binary = atob(base64.replace(/\n/g, ""));
+  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
+function utf8ToBase64(text: string): string {
+  const bytes = new TextEncoder().encode(text);
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary);
+}
+
 export async function getFileContent(
   path: string
 ): Promise<{ content: string; sha: string }> {
@@ -80,7 +93,7 @@ export async function getFileContent(
     );
   }
   const data: GitHubFileResponse = await res.json();
-  const content = atob(data.content.replace(/\n/g, ""));
+  const content = base64ToUtf8(data.content);
   return { content, sha: data.sha };
 }
 
@@ -89,7 +102,7 @@ export async function updateFile(
   content: string,
   sha: string,
   message: string
-): Promise<void> {
+): Promise<{ commitSha: string }> {
   const { owner, repo, branch } = getRepoConfig();
   const res = await githubFetch(
     `/repos/${owner}/${repo}/contents/${path}`,
@@ -97,7 +110,7 @@ export async function updateFile(
       method: "PUT",
       body: JSON.stringify({
         message,
-        content: btoa(unescape(encodeURIComponent(content))),
+        content: utf8ToBase64(content),
         sha,
         branch,
       }),
@@ -109,6 +122,8 @@ export async function updateFile(
       `Failed to update ${path}: ${err.message || res.statusText}`
     );
   }
+  const data = await res.json();
+  return { commitSha: data.commit?.sha || "" };
 }
 
 export async function validateToken(): Promise<boolean> {
