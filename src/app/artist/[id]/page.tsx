@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getArtists, getArtist, getSongsByArtist } from "@/lib/data";
 import { assetPath } from "@/lib/basePath";
 import SongList from "@/components/SongList";
+import ArtistImage from "@/components/ArtistImage";
 import { notFound } from "next/navigation";
 
 export function generateStaticParams() {
@@ -50,7 +51,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
       <div className="flex flex-col md:flex-row gap-8 mb-12">
         <div className="flex-shrink-0">
           <div className="w-48 h-48 rounded-2xl overflow-hidden border border-white/10 shadow-xl shadow-accent/5">
-            <img
+            <ArtistImage
               src={assetPath(artist.image)}
               alt={artist.name}
               className="w-full h-full object-cover"

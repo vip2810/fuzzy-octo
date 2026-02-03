@@ -118,16 +118,13 @@ function extractPlaylistId(url: string): string | null {
   return match ? match[1] : null;
 }
 
-/** Parse "Artist - Title" or "Title - Artist" or just "Title" from YouTube video titles */
 function parseVideoTitle(raw: string): { artist: string; title: string } {
-  // Remove common suffixes like (Official Video), [HD], (Lyrics), etc.
   let cleaned = raw
     .replace(/\s*[\(\[].*?(?:official|video|audio|lyrics|hd|hq|karaoke|live|4k|1080p|720p|sinhala|with lyrics).*?[\)\]]/gi, "")
     .replace(/\s*\|.*$/, "")
     .replace(/\s*-\s*(?:official|video|audio|lyrics|hd|hq|karaoke).*$/gi, "")
     .trim();
 
-  // Try "Artist - Title" split
   const dashParts = cleaned.split(/\s*[-–—]\s*/);
   if (dashParts.length >= 2) {
     return {
@@ -306,9 +303,9 @@ function SettingsPanel({ onSave }: { onSave: () => void }) {
   );
 }
 
-// ─── Artist Form ─────────────────────────────────────────────
+// ─── Inline Artist Edit ──────────────────────────────────────
 
-function ArtistForm({
+function InlineArtistForm({
   artist,
   onSave,
   onCancel,
@@ -332,34 +329,47 @@ function ArtistForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm text-gray-400 mb-1">Name</label>
-        <input value={name} onChange={(e) => setName(e.target.value)} required className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:border-accent focus:outline-none" />
-      </div>
-      <div>
-        <label className="block text-sm text-gray-400 mb-1">Image URL (leave empty for default)</label>
-        <input value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://..." className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder-gray-600 focus:border-accent focus:outline-none" />
-      </div>
-      <div>
-        <label className="block text-sm text-gray-400 mb-1">Description</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:border-accent focus:outline-none resize-none" />
-      </div>
-      <div className="flex gap-3">
-        <button type="submit" className="px-6 py-3 rounded-xl bg-accent hover:bg-accent-light transition-colors text-white font-semibold">
-          {artist ? "Update" : "Add"} Artist
-        </button>
-        <button type="button" onClick={onCancel} className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-gray-300">
-          Cancel
-        </button>
-      </div>
-    </form>
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      className="overflow-hidden"
+    >
+      <form onSubmit={handleSubmit} className="bg-card-bg rounded-xl p-5 border-2 border-accent/40 space-y-3">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+          <span className="text-sm font-semibold text-accent">{artist ? `Editing: ${artist.name}` : "New Artist"}</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Name</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} required className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-accent focus:outline-none" autoFocus />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Image URL (leave empty for default)</label>
+            <input value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://..." className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm placeholder-gray-600 focus:border-accent focus:outline-none" />
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Description</label>
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-accent focus:outline-none resize-none" />
+        </div>
+        <div className="flex gap-2 pt-1">
+          <button type="submit" className="px-5 py-2 rounded-lg bg-accent hover:bg-accent-light transition-colors text-white text-sm font-semibold">
+            {artist ? "Save Changes" : "Add Artist"}
+          </button>
+          <button type="button" onClick={onCancel} className="px-5 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-gray-300 text-sm">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </motion.div>
   );
 }
 
-// ─── Song Form ───────────────────────────────────────────────
+// ─── Inline Song Edit ────────────────────────────────────────
 
-function SongForm({
+function InlineSongForm({
   song,
   artists,
   onSave,
@@ -381,32 +391,49 @@ function SongForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm text-gray-400 mb-1">Song Title</label>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:border-accent focus:outline-none" />
-      </div>
-      <div>
-        <label className="block text-sm text-gray-400 mb-1">Artist</label>
-        <select value={artistId} onChange={(e) => setArtistId(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:border-accent focus:outline-none">
-          {artists.map((a) => (<option key={a.id} value={a.id}>{a.name}</option>))}
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm text-gray-400 mb-1">YouTube URL</label>
-        <input value={youtube} onChange={(e) => setYoutube(e.target.value)} required placeholder="https://www.youtube.com/watch?v=..." className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder-gray-600 focus:border-accent focus:outline-none" />
-      </div>
-      <div>
-        <label className="block text-sm text-gray-400 mb-1">Order</label>
-        <input type="number" value={order} onChange={(e) => setOrder(parseInt(e.target.value) || 1)} min={1} className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:border-accent focus:outline-none" />
-      </div>
-      <div className="flex gap-3">
-        <button type="submit" className="px-6 py-3 rounded-xl bg-accent hover:bg-accent-light transition-colors text-white font-semibold">
-          {song ? "Update" : "Add"} Song
-        </button>
-        <button type="button" onClick={onCancel} className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-gray-300">Cancel</button>
-      </div>
-    </form>
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      className="overflow-hidden"
+    >
+      <form onSubmit={handleSubmit} className="bg-card-bg rounded-xl p-5 border-2 border-accent/40 space-y-3">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+          <span className="text-sm font-semibold text-accent">{song ? `Editing: ${song.title}` : "New Song"}</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Song Title</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-accent focus:outline-none" autoFocus />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Artist</label>
+            <select value={artistId} onChange={(e) => setArtistId(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-accent focus:outline-none">
+              {artists.map((a) => (<option key={a.id} value={a.id}>{a.name}</option>))}
+            </select>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_100px] gap-3">
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">YouTube URL</label>
+            <input value={youtube} onChange={(e) => setYoutube(e.target.value)} required placeholder="https://www.youtube.com/watch?v=..." className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm placeholder-gray-600 focus:border-accent focus:outline-none" />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Order</label>
+            <input type="number" value={order} onChange={(e) => setOrder(parseInt(e.target.value) || 1)} min={1} className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-accent focus:outline-none" />
+          </div>
+        </div>
+        <div className="flex gap-2 pt-1">
+          <button type="submit" className="px-5 py-2 rounded-lg bg-accent hover:bg-accent-light transition-colors text-white text-sm font-semibold">
+            {song ? "Save Changes" : "Add Song"}
+          </button>
+          <button type="button" onClick={onCancel} className="px-5 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-gray-300 text-sm">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </motion.div>
   );
 }
 
@@ -472,7 +499,6 @@ function PlaylistImport({
     setItems([]);
 
     try {
-      // Fetch playlist info
       const infoRes = await fetch(
         `https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=${playlistId}&key=${apiKey}`
       );
@@ -480,7 +506,6 @@ function PlaylistImport({
       if (infoData.error) throw new Error(infoData.error.message);
       setPlaylistTitle(infoData.items?.[0]?.snippet?.title || "Playlist");
 
-      // Fetch all items (paginated)
       const allItems: PlaylistItem[] = [];
       let pageToken = "";
       do {
@@ -545,9 +570,8 @@ function PlaylistImport({
     const selected = items.filter((i) => i.selected);
     if (selected.length === 0) return;
 
-    // Collect new artists from unassigned items
     const newArtists: Artist[] = [];
-    const artistMap = new Map<string, string>(); // parsedArtist -> id
+    const artistMap = new Map<string, string>();
 
     for (const item of selected) {
       if (!item.assignedArtistId && item.parsedArtist) {
@@ -719,8 +743,8 @@ export default function AdminPage() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [artistsSha, setArtistsSha] = useState("");
   const [songsSha, setSongsSha] = useState("");
-  const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
-  const [editingSong, setEditingSong] = useState<Song | null>(null);
+  const [editingArtistId, setEditingArtistId] = useState<string | null>(null);
+  const [editingSongId, setEditingSongId] = useState<string | null>(null);
   const [showNewArtist, setShowNewArtist] = useState(false);
   const [showNewSong, setShowNewSong] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -785,9 +809,9 @@ export default function AdminPage() {
       const updated = [...artists];
       if (idx >= 0) updated[idx] = artist;
       else updated.push(artist);
-      setEditingArtist(null);
-      setShowNewArtist(false);
       await saveArtists(updated);
+      setEditingArtistId(null);
+      setShowNewArtist(false);
       showMsg("Artist saved!");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
@@ -817,9 +841,9 @@ export default function AdminPage() {
       const updated = [...songs];
       if (idx >= 0) updated[idx] = song;
       else updated.push(song);
-      setEditingSong(null);
-      setShowNewSong(false);
       await saveSongs(updated);
+      setEditingSongId(null);
+      setShowNewSong(false);
       showMsg("Song saved!");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
@@ -895,9 +919,23 @@ export default function AdminPage() {
           Logout
         </button>
       </div>
-      <p className="text-sm text-gray-500 mb-8">
+      <p className="text-sm text-gray-500 mb-4">
         {config.owner}/{config.repo} @ <span className="text-accent">{config.branch}</span>
       </p>
+
+      {/* How it works banner */}
+      <div className="mb-8 p-4 rounded-xl bg-surface/30 border border-white/5">
+        <div className="flex items-start gap-3">
+          <div className="text-accent mt-0.5">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <div className="text-xs text-gray-400 leading-relaxed">
+            <strong className="text-gray-300">How it works:</strong> This dashboard saves changes directly to your GitHub repository via the GitHub API.
+            After each save, GitHub Pages automatically rebuilds the site (takes 1-2 minutes).
+            <span className="block mt-1 text-gray-500">Your browser &rarr; GitHub API &rarr; Commits to repo &rarr; GitHub Pages auto-rebuilds</span>
+          </div>
+        </div>
+      </div>
 
       <AnimatePresence>
         {message && (
@@ -948,76 +986,111 @@ export default function AdminPage() {
             />
           )}
 
+          {/* ─── ARTISTS TAB (inline editing) ──────────────── */}
           {tab === "artists" && (
-            <div>
-              <div className="flex justify-end mb-4">
-                <button onClick={() => { setShowNewArtist(true); setEditingArtist(null); }} disabled={saving} className="px-6 py-3 rounded-xl bg-accent hover:bg-accent-light transition-colors text-white font-semibold disabled:opacity-50">
+            <div className="space-y-3">
+              <div className="flex justify-end mb-1">
+                <button
+                  onClick={() => { setShowNewArtist(!showNewArtist); setEditingArtistId(null); }}
+                  disabled={saving}
+                  className="px-6 py-3 rounded-xl bg-accent hover:bg-accent-light transition-colors text-white font-semibold disabled:opacity-50"
+                >
                   + Add Artist
                 </button>
               </div>
 
-              {showNewArtist && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 bg-card-bg rounded-2xl p-6 border border-white/10">
-                  <h3 className="text-lg font-bold text-white mb-4">New Artist</h3>
-                  <ArtistForm key="new" onSave={handleSaveArtist} onCancel={() => setShowNewArtist(false)} />
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {showNewArtist && (
+                  <InlineArtistForm
+                    key="new-artist-form"
+                    onSave={handleSaveArtist}
+                    onCancel={() => setShowNewArtist(false)}
+                  />
+                )}
+              </AnimatePresence>
 
-              <div className="space-y-3">
-                {artists.map((artist) => (
-                  <div key={artist.id} className="bg-card-bg rounded-xl p-4 border border-white/5 flex items-center gap-4">
-                    <img
-                      src={artist.image}
-                      alt={artist.name}
-                      className="w-14 h-14 rounded-xl object-cover bg-surface"
-                      onError={(e) => { (e.target as HTMLImageElement).src = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><rect width="56" height="56" rx="12" fill="%23111128"/><text x="28" y="34" font-size="20" fill="%23e94560" text-anchor="middle" font-family="sans-serif">${artist.name.charAt(0)}</text></svg>`)}`; }}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-white">{artist.name}</h3>
-                      <p className="text-sm text-gray-400 truncate">{artist.description}</p>
-                      <p className="text-xs text-gray-500">{songs.filter((s) => s.artistId === artist.id).length} songs</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => { setEditingArtist(artist); setShowNewArtist(false); }}
-                        className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm text-gray-300 transition-colors"
+              {artists.map((artist) => (
+                <div key={artist.id}>
+                  <AnimatePresence mode="wait">
+                    {editingArtistId === artist.id ? (
+                      <InlineArtistForm
+                        key={`edit-${artist.id}`}
+                        artist={artist}
+                        onSave={handleSaveArtist}
+                        onCancel={() => setEditingArtistId(null)}
+                      />
+                    ) : (
+                      <motion.div
+                        key={`row-${artist.id}`}
+                        layout
+                        className="bg-card-bg rounded-xl p-4 border border-white/5 flex items-center gap-4"
                       >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteArtist(artist.id)}
-                        className="px-3 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-sm text-red-400 transition-colors"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                        <img
+                          src={artist.image}
+                          alt={artist.name}
+                          className="w-14 h-14 rounded-xl object-cover bg-surface"
+                          onError={(e) => { (e.target as HTMLImageElement).src = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><rect width="56" height="56" rx="12" fill="%23111128"/><text x="28" y="34" font-size="20" fill="%23e94560" text-anchor="middle" font-family="sans-serif">${artist.name.charAt(0)}</text></svg>`)}`; }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-white">{artist.name}</h3>
+                          <p className="text-sm text-gray-400 truncate">{artist.description}</p>
+                          <p className="text-xs text-gray-500">{songs.filter((s) => s.artistId === artist.id).length} songs</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => { setEditingArtistId(artist.id); setShowNewArtist(false); }}
+                            disabled={saving}
+                            className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm text-gray-300 transition-colors disabled:opacity-50"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteArtist(artist.id)}
+                            disabled={saving}
+                            className="px-3 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-sm text-red-400 transition-colors disabled:opacity-50"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
 
-              {editingArtist && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 bg-card-bg rounded-2xl p-6 border border-accent/30">
-                  <h3 className="text-lg font-bold text-white mb-4">Edit: {editingArtist.name}</h3>
-                  <ArtistForm key={editingArtist.id} artist={editingArtist} onSave={handleSaveArtist} onCancel={() => setEditingArtist(null)} />
-                </motion.div>
+              {artists.length === 0 && !showNewArtist && (
+                <div className="text-center py-12 bg-card-bg/40 rounded-2xl border border-white/5">
+                  <p className="text-gray-500">No artists yet. Click &quot;+ Add Artist&quot; to get started.</p>
+                </div>
               )}
             </div>
           )}
 
+          {/* ─── SONGS TAB (inline editing) ─────────────────── */}
           {tab === "songs" && (
             <div>
               <div className="flex justify-end mb-4">
-                <button onClick={() => { setShowNewSong(true); setEditingSong(null); }} disabled={saving || artists.length === 0} className="px-6 py-3 rounded-xl bg-accent hover:bg-accent-light transition-colors text-white font-semibold disabled:opacity-50">
+                <button
+                  onClick={() => { setShowNewSong(!showNewSong); setEditingSongId(null); }}
+                  disabled={saving || artists.length === 0}
+                  className="px-6 py-3 rounded-xl bg-accent hover:bg-accent-light transition-colors text-white font-semibold disabled:opacity-50"
+                >
                   + Add Song
                 </button>
               </div>
 
-              {showNewSong && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 bg-card-bg rounded-2xl p-6 border border-white/10">
-                  <h3 className="text-lg font-bold text-white mb-4">New Song</h3>
-                  <SongForm key="new" artists={artists} onSave={handleSaveSong} onCancel={() => setShowNewSong(false)} />
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {showNewSong && (
+                  <div className="mb-6">
+                    <InlineSongForm
+                      key="new-song-form"
+                      artists={artists}
+                      onSave={handleSaveSong}
+                      onCancel={() => setShowNewSong(false)}
+                    />
+                  </div>
+                )}
+              </AnimatePresence>
 
               {artists.map((artist) => {
                 const artistSongs = songs.filter((s) => s.artistId === artist.id).sort((a, b) => a.order - b.order);
@@ -1027,18 +1100,48 @@ export default function AdminPage() {
                     <h3 className="text-lg font-bold text-white mb-3">{artist.name}</h3>
                     <div className="space-y-2">
                       {artistSongs.map((song, idx) => (
-                        <div key={song.id} className="bg-card-bg rounded-xl p-4 border border-white/5 flex items-center gap-4">
-                          <span className="w-8 h-8 rounded-full bg-accent/20 text-accent flex items-center justify-center text-sm font-bold">{song.order}</span>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-white">{song.title}</h4>
-                            <p className="text-xs text-gray-500 truncate">{song.youtube}</p>
-                          </div>
-                          <div className="flex gap-1">
-                            <button onClick={() => handleMoveSong(song.id, "up")} disabled={idx === 0 || saving} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 disabled:opacity-30 transition-colors flex items-center justify-center">&#8593;</button>
-                            <button onClick={() => handleMoveSong(song.id, "down")} disabled={idx === artistSongs.length - 1 || saving} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 disabled:opacity-30 transition-colors flex items-center justify-center">&#8595;</button>
-                            <button onClick={() => { setEditingSong(song); setShowNewSong(false); }} className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-sm text-gray-300 transition-colors">Edit</button>
-                            <button onClick={() => handleDeleteSong(song.id)} className="px-3 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-sm text-red-400 transition-colors">Del</button>
-                          </div>
+                        <div key={song.id}>
+                          <AnimatePresence mode="wait">
+                            {editingSongId === song.id ? (
+                              <InlineSongForm
+                                key={`edit-${song.id}`}
+                                song={song}
+                                artists={artists}
+                                onSave={handleSaveSong}
+                                onCancel={() => setEditingSongId(null)}
+                              />
+                            ) : (
+                              <motion.div
+                                key={`row-${song.id}`}
+                                layout
+                                className="bg-card-bg rounded-xl p-4 border border-white/5 flex items-center gap-4"
+                              >
+                                <span className="w-8 h-8 rounded-full bg-accent/20 text-accent flex items-center justify-center text-sm font-bold flex-shrink-0">{song.order}</span>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-semibold text-white">{song.title}</h4>
+                                  <p className="text-xs text-gray-500 truncate">{song.youtube}</p>
+                                </div>
+                                <div className="flex gap-1">
+                                  <button onClick={() => handleMoveSong(song.id, "up")} disabled={idx === 0 || saving} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 disabled:opacity-30 transition-colors flex items-center justify-center">&#8593;</button>
+                                  <button onClick={() => handleMoveSong(song.id, "down")} disabled={idx === artistSongs.length - 1 || saving} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 disabled:opacity-30 transition-colors flex items-center justify-center">&#8595;</button>
+                                  <button
+                                    onClick={() => { setEditingSongId(song.id); setShowNewSong(false); }}
+                                    disabled={saving}
+                                    className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-sm text-gray-300 transition-colors disabled:opacity-50"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteSong(song.id)}
+                                    disabled={saving}
+                                    className="px-3 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-sm text-red-400 transition-colors disabled:opacity-50"
+                                  >
+                                    Del
+                                  </button>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
                       ))}
                     </div>
@@ -1046,11 +1149,10 @@ export default function AdminPage() {
                 );
               })}
 
-              {editingSong && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 bg-card-bg rounded-2xl p-6 border border-accent/30">
-                  <h3 className="text-lg font-bold text-white mb-4">Edit: {editingSong.title}</h3>
-                  <SongForm key={editingSong.id} song={editingSong} artists={artists} onSave={handleSaveSong} onCancel={() => setEditingSong(null)} />
-                </motion.div>
+              {songs.length === 0 && !showNewSong && (
+                <div className="text-center py-12 bg-card-bg/40 rounded-2xl border border-white/5">
+                  <p className="text-gray-500">No songs yet. Click &quot;+ Add Song&quot; or use the Import tab.</p>
+                </div>
               )}
             </div>
           )}
