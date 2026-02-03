@@ -1,0 +1,78 @@
+songs:
+  - id: punsanda-paaya
+    artistId: jothipala
+    title: Punsanda Paaya
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 1
+
+  - id: oba-nisa-me
+    artistId: jothipala
+    title: Oba Nisa Me Hitha
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 2
+
+  - id: nil-dasa-horen
+    artistId: jothipala
+    title: Nil Dasa Horen
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 3
+
+  - id: jeewithaye-thani
+    artistId: victor
+    title: Jeewithaye Thani Mansala
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 1
+
+  - id: amma
+    artistId: victor
+    title: Amma
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 2
+
+  - id: rella-weralata
+    artistId: clarence
+    title: Rella Weralata Aadare
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 1
+
+  - id: sonduru-sithe
+    artistId: clarence
+    title: Sonduru Sithe
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 2
+
+  - id: danno-budunge
+    artistId: nanda
+    title: Danno Budunge
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 1
+
+  - id: me-maha-pathawi
+    artistId: nanda
+    title: Me Maha Pathawiye
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 2
+
+  - id: siripathi-sinhaye
+    artistId: sunil
+    title: Siripathi Sinhaye
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 1
+
+  - id: meedum-rawana
+    artistId: sunil
+    title: Meedum Rawana Wage
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 2
+
+  - id: natha-we-enna
+    artistId: amaradeva
+    title: Natha We Enna Epa Kandulal
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 1
+
+  - id: olu-pipila
+    artistId: amaradeva
+    title: Olu Pipila
+    youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    order: 2

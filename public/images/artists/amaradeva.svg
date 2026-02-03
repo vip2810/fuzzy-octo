@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="bg-amaradeva" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#DC143C"/>
+      <stop offset="55%" stop-color="#8B0000"/>
+      <stop offset="100%" stop-color="#3A0000"/>
+    </radialGradient>
+    <linearGradient id="drum-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFE0E0"/>
+      <stop offset="100%" stop-color="#DC143C"/>
+    </linearGradient>
+    <filter id="glow-a">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" rx="20" fill="url(#bg-amaradeva)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="200" cy="185" r="130" fill="none" stroke="#FFE0E0" stroke-width="1" stroke-opacity="0.1"/>
+  <circle cx="200" cy="185" r="150" fill="none" stroke="#FFE0E0" stroke-width="0.6" stroke-opacity="0.06"/>
+
+  <!-- Traditional Bera drum (horizontal double-headed drum) -->
+  <g filter="url(#glow-a)" transform="translate(200,180)">
+
+    <!-- Drum body - barrel shape -->
+    <path d="
+      M -80,0
+      Q -80,-42 -60,-50
+      Q -30,-58 0,-60
+      Q 30,-58 60,-50
+      Q 80,-42 80,0
+      Q 80,42 60,50
+      Q 30,58 0,60
+      Q -30,58 -60,50
+      Q -80,42 -80,0
+      Z
+    " fill="#1A0808" stroke="#DC143C" stroke-width="2.5"/>
+
+    <!-- Drum body highlight curve -->
+    <path d="
+      M -75,-5
+      Q -75,-38 -55,-46
+      Q -25,-53 0,-55
+      Q 25,-53 55,-46
+      Q 75,-38 75,-5
+    " fill="none" stroke="#FFE0E0" stroke-width="0.8" stroke-opacity="0.15"/>
+
+    <!-- Center bulge of the bera -->
+    <ellipse cx="0" cy="0" rx="45" ry="55" fill="none" stroke="#DC143C" stroke-width="1.5" stroke-opacity="0.5"/>
+
+    <!-- Horizontal binding ropes -->
+    <line x1="-78" y1="-15" x2="78" y2="-15" stroke="#FFE0E0" stroke-width="1" stroke-opacity="0.2"/>
+    <line x1="-78" y1="15" x2="78" y2="15" stroke="#FFE0E0" stroke-width="1" stroke-opacity="0.2"/>
+
+    <!-- Zigzag lacing pattern -->
+    <path d="M-70,-25 L-55,25 L-40,-25 L-25,25 L-10,-25 L5,25 L20,-25 L35,25 L50,-25 L65,25"
+          fill="none" stroke="#FFE0E0" stroke-width="1.2" stroke-opacity="0.25" stroke-linecap="round"/>
+
+    <!-- Left drum head -->
+    <ellipse cx="-75" cy="0" rx="12" ry="38" fill="#2A0808" stroke="#DC143C" stroke-width="2"/>
+    <ellipse cx="-75" cy="0" rx="8" ry="30" fill="none" stroke="#FFE0E0" stroke-width="0.8" stroke-opacity="0.2"/>
+    <!-- Inner circle on left head -->
+    <ellipse cx="-75" cy="0" rx="4" ry="18" fill="none" stroke="#FFE0E0" stroke-width="0.5" stroke-opacity="0.15"/>
+
+    <!-- Right drum head -->
+    <ellipse cx="75" cy="0" rx="12" ry="38" fill="#2A0808" stroke="#DC143C" stroke-width="2"/>
+    <ellipse cx="75" cy="0" rx="8" ry="30" fill="none" stroke="#FFE0E0" stroke-width="0.8" stroke-opacity="0.2"/>
+    <!-- Inner circle on right head -->
+    <ellipse cx="75" cy="0" rx="4" ry="18" fill="none" stroke="#FFE0E0" stroke-width="0.5" stroke-opacity="0.15"/>
+
+    <!-- Decorative band rings -->
+    <ellipse cx="-40" cy="0" rx="5" ry="48" fill="none" stroke="#DC143C" stroke-width="1" stroke-opacity="0.4"/>
+    <ellipse cx="40" cy="0" rx="5" ry="48" fill="none" stroke="#DC143C" stroke-width="1" stroke-opacity="0.4"/>
+
+    <!-- Body texture lines -->
+    <path d="M-30,-52 L-30,52" stroke="#FFE0E0" stroke-width="0.3" stroke-opacity="0.1"/>
+    <path d="M0,-58 L0,58" stroke="#FFE0E0" stroke-width="0.3" stroke-opacity="0.1"/>
+    <path d="M30,-52 L30,52" stroke="#FFE0E0" stroke-width="0.3" stroke-opacity="0.1"/>
+  </g>
+
+  <!-- Sound/vibration waves from left -->
+  <path d="M85,180 Q75,160 85,140" fill="none" stroke="#FFE0E0" stroke-width="1.5" stroke-opacity="0.25" stroke-linecap="round"/>
+  <path d="M75,180 Q62,155 75,130" fill="none" stroke="#FFE0E0" stroke-width="1" stroke-opacity="0.15" stroke-linecap="round"/>
+
+  <!-- Sound/vibration waves from right -->
+  <path d="M315,180 Q325,160 315,140" fill="none" stroke="#FFE0E0" stroke-width="1.5" stroke-opacity="0.25" stroke-linecap="round"/>
+  <path d="M325,180 Q338,155 325,130" fill="none" stroke="#FFE0E0" stroke-width="1" stroke-opacity="0.15" stroke-linecap="round"/>
+
+  <!-- Rhythm dots pattern -->
+  <g fill="#FFE0E0" opacity="0.2">
+    <circle cx="140" cy="90" r="3"/>
+    <circle cx="160" cy="85" r="2"/>
+    <circle cx="180" cy="82" r="3"/>
+    <circle cx="200" cy="80" r="2"/>
+    <circle cx="220" cy="82" r="3"/>
+    <circle cx="240" cy="85" r="2"/>
+    <circle cx="260" cy="90" r="3"/>
+  </g>
+
+  <!-- Sparkle dots -->
+  <circle cx="100" cy="120" r="2" fill="#FFE0E0" opacity="0.4"/>
+  <circle cx="310" cy="110" r="1.5" fill="#FFE0E0" opacity="0.35"/>
+  <circle cx="90" cy="250" r="1.5" fill="#FFE0E0" opacity="0.3"/>
+  <circle cx="320" cy="260" r="2" fill="#FFE0E0" opacity="0.25"/>
+  <circle cx="130" cy="290" r="1.5" fill="#DC143C" opacity="0.3"/>
+  <circle cx="280" cy="280" r="1.8" fill="#DC143C" opacity="0.25"/>
+
+  <!-- Small decorative musical notes -->
+  <g fill="#FFE0E0" opacity="0.25">
+    <ellipse cx="100" cy="160" rx="5" ry="3.5" transform="rotate(-15,100,160)"/>
+    <rect x="104" y="142" width="1.8" height="18"/>
+    <ellipse cx="305" cy="210" rx="5" ry="3.5" transform="rotate(15,305,210)"/>
+    <rect x="309" y="192" width="1.8" height="18"/>
+  </g>
+
+  <!-- Divider -->
+  <line x1="120" y1="330" x2="280" y2="330" stroke="#FFE0E0" stroke-width="0.8" stroke-opacity="0.3"/>
+
+  <!-- Initials -->
+  <text x="200" y="373" text-anchor="middle" font-family="Georgia, serif" font-size="36" font-weight="bold" fill="#FFE0E0" letter-spacing="8" opacity="0.85">WDA</text>
+</svg>

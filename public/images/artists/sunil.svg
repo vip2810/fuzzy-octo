@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="bg-sunil" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#2ECC71"/>
+      <stop offset="55%" stop-color="#006400"/>
+      <stop offset="100%" stop-color="#002A00"/>
+    </radialGradient>
+    <linearGradient id="clef-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E0FFE0"/>
+      <stop offset="100%" stop-color="#2ECC71"/>
+    </linearGradient>
+    <filter id="glow-s">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" rx="20" fill="url(#bg-sunil)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="200" cy="180" r="130" fill="none" stroke="#E0FFE0" stroke-width="1" stroke-opacity="0.1"/>
+  <circle cx="200" cy="180" r="150" fill="none" stroke="#E0FFE0" stroke-width="0.6" stroke-opacity="0.06"/>
+
+  <!-- Staff lines (subtle background) -->
+  <g stroke="#E0FFE0" stroke-width="0.5" stroke-opacity="0.12">
+    <line x1="60" y1="120" x2="340" y2="120"/>
+    <line x1="60" y1="145" x2="340" y2="145"/>
+    <line x1="60" y1="170" x2="340" y2="170"/>
+    <line x1="60" y1="195" x2="340" y2="195"/>
+    <line x1="60" y1="220" x2="340" y2="220"/>
+  </g>
+
+  <!-- Treble Clef -->
+  <g filter="url(#glow-s)" transform="translate(200,170) scale(1.1)">
+    <!-- Main clef curve - drawn as a path -->
+    <path d="
+      M 5,80
+      Q 5,85 0,85
+      Q -12,85 -20,72
+      Q -30,55 -28,35
+      Q -26,15 -15,0
+      Q -5,-15 5,-35
+      Q 15,-58 10,-80
+      Q 7,-95 0,-95
+      Q -8,-95 -12,-85
+      Q -18,-72 -15,-55
+      Q -12,-38 0,-25
+      Q 15,-10 25,10
+      Q 35,30 35,50
+      Q 35,72 20,85
+      Q 5,95 -12,90
+      Q -28,84 -35,68
+      Q -42,50 -35,32
+      Q -28,15 -12,8
+      Q 2,2 12,10
+      Q 22,18 22,32
+      Q 22,45 12,52
+      Q 2,58 -8,52
+      Q -15,46 -15,38
+      Q -15,30 -8,26
+      Q -2,22 3,26
+    "
+    fill="none"
+    stroke="#E0FFE0"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    opacity="0.85"/>
+
+    <!-- Bottom dot of treble clef -->
+    <circle cx="0" cy="85" r="5" fill="#0A2A0A" stroke="#2ECC71" stroke-width="2"/>
+    <circle cx="0" cy="85" r="2.5" fill="#2ECC71" opacity="0.4"/>
+
+    <!-- Inner glow line (thinner, brighter) -->
+    <path d="
+      M 5,80
+      Q 5,85 0,85
+      Q -12,85 -20,72
+      Q -30,55 -28,35
+      Q -26,15 -15,0
+      Q -5,-15 5,-35
+      Q 15,-58 10,-80
+      Q 7,-95 0,-95
+      Q -8,-95 -12,-85
+      Q -18,-72 -15,-55
+      Q -12,-38 0,-25
+      Q 15,-10 25,10
+      Q 35,30 35,50
+      Q 35,72 20,85
+      Q 5,95 -12,90
+      Q -28,84 -35,68
+      Q -42,50 -35,32
+      Q -28,15 -12,8
+      Q 2,2 12,10
+      Q 22,18 22,32
+      Q 22,45 12,52
+      Q 2,58 -8,52
+      Q -15,46 -15,38
+      Q -15,30 -8,26
+      Q -2,22 3,26
+    "
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="1"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    opacity="0.15"/>
+  </g>
+
+  <!-- Sparkle dots -->
+  <circle cx="110" cy="95" r="2" fill="#E0FFE0" opacity="0.4"/>
+  <circle cx="300" cy="105" r="1.5" fill="#E0FFE0" opacity="0.35"/>
+  <circle cx="90" cy="230" r="1.5" fill="#E0FFE0" opacity="0.3"/>
+  <circle cx="320" cy="240" r="2" fill="#E0FFE0" opacity="0.25"/>
+  <circle cx="340" cy="160" r="1.8" fill="#2ECC71" opacity="0.3"/>
+  <circle cx="70" cy="170" r="1.8" fill="#2ECC71" opacity="0.25"/>
+
+  <!-- Small decorative notes -->
+  <g fill="#E0FFE0" opacity="0.25">
+    <ellipse cx="85" cy="140" rx="5" ry="3.5" transform="rotate(-15,85,140)"/>
+    <rect x="89" y="122" width="1.8" height="18"/>
+    <ellipse cx="320" cy="185" rx="5" ry="3.5" transform="rotate(15,320,185)"/>
+    <rect x="324" y="167" width="1.8" height="18"/>
+  </g>
+
+  <!-- Divider -->
+  <line x1="120" y1="330" x2="280" y2="330" stroke="#E0FFE0" stroke-width="0.8" stroke-opacity="0.3"/>
+
+  <!-- Initials -->
+  <text x="200" y="373" text-anchor="middle" font-family="Georgia, serif" font-size="36" font-weight="bold" fill="#E0FFE0" letter-spacing="8" opacity="0.85">SE</text>
+</svg>

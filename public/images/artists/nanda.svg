@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="bg-nanda" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#FF69B4"/>
+      <stop offset="55%" stop-color="#E91E63"/>
+      <stop offset="100%" stop-color="#880E4F"/>
+    </radialGradient>
+    <linearGradient id="lotus-grad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#E91E63"/>
+      <stop offset="100%" stop-color="#FFE0EB"/>
+    </linearGradient>
+    <filter id="glow-n">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" rx="20" fill="url(#bg-nanda)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="200" cy="175" r="125" fill="none" stroke="#FFE0EB" stroke-width="1" stroke-opacity="0.12"/>
+  <circle cx="200" cy="175" r="145" fill="none" stroke="#FFE0EB" stroke-width="0.6" stroke-opacity="0.08"/>
+
+  <!-- Lotus flower -->
+  <g filter="url(#glow-n)" transform="translate(200,175)">
+    <!-- Back petals -->
+    <ellipse cx="-45" cy="-10" rx="18" ry="42" transform="rotate(30,-45,-10)"
+             fill="#2A0A1A" stroke="#FF69B4" stroke-width="1.5" opacity="0.7"/>
+    <ellipse cx="45" cy="-10" rx="18" ry="42" transform="rotate(-30,45,-10)"
+             fill="#2A0A1A" stroke="#FF69B4" stroke-width="1.5" opacity="0.7"/>
+    <ellipse cx="-55" cy="5" rx="16" ry="38" transform="rotate(50,-55,5)"
+             fill="#2A0A1A" stroke="#FF69B4" stroke-width="1.2" opacity="0.5"/>
+    <ellipse cx="55" cy="5" rx="16" ry="38" transform="rotate(-50,55,5)"
+             fill="#2A0A1A" stroke="#FF69B4" stroke-width="1.2" opacity="0.5"/>
+
+    <!-- Main petals -->
+    <ellipse cx="-28" cy="-15" rx="20" ry="48" transform="rotate(18,-28,-15)"
+             fill="#2A0A1A" stroke="#E91E63" stroke-width="2"/>
+    <ellipse cx="28" cy="-15" rx="20" ry="48" transform="rotate(-18,28,-15)"
+             fill="#2A0A1A" stroke="#E91E63" stroke-width="2"/>
+    <!-- Center petal -->
+    <ellipse cx="0" cy="-25" rx="18" ry="50"
+             fill="#2A0A1A" stroke="#E91E63" stroke-width="2"/>
+
+    <!-- Petal vein lines -->
+    <line x1="0" y1="-70" x2="0" y2="15" stroke="#FFE0EB" stroke-width="0.5" stroke-opacity="0.2"/>
+    <line x1="-28" y1="-58" x2="-28" y2="20" stroke="#FFE0EB" stroke-width="0.5" stroke-opacity="0.15" transform="rotate(18,-28,-15)"/>
+    <line x1="28" y1="-58" x2="28" y2="20" stroke="#FFE0EB" stroke-width="0.5" stroke-opacity="0.15" transform="rotate(-18,28,-15)"/>
+
+    <!-- Lotus center -->
+    <circle cx="0" cy="5" r="14" fill="#3A0A1A" stroke="#FF69B4" stroke-width="1.5"/>
+    <circle cx="0" cy="5" r="8" fill="#E91E63" opacity="0.3"/>
+    <!-- Center dots -->
+    <circle cx="0" cy="0" r="2" fill="#FFE0EB" opacity="0.5"/>
+    <circle cx="-5" cy="5" r="1.5" fill="#FFE0EB" opacity="0.4"/>
+    <circle cx="5" cy="5" r="1.5" fill="#FFE0EB" opacity="0.4"/>
+    <circle cx="0" cy="10" r="1.5" fill="#FFE0EB" opacity="0.35"/>
+
+    <!-- Base/water line -->
+    <path d="M-60,30 Q-30,38 0,32 Q30,26 60,30" fill="none" stroke="#FFE0EB" stroke-width="1" stroke-opacity="0.3"/>
+    <path d="M-50,36 Q-20,42 0,38 Q25,34 50,36" fill="none" stroke="#FFE0EB" stroke-width="0.7" stroke-opacity="0.2"/>
+  </g>
+
+  <!-- Musical note - floating to the upper right -->
+  <g filter="url(#glow-n)" transform="translate(290,100)" opacity="0.7">
+    <ellipse cx="0" cy="0" rx="12" ry="8" transform="rotate(-20,0,0)" fill="#2A0A1A" stroke="#FF69B4" stroke-width="1.5"/>
+    <rect x="11" y="-42" width="3" height="42" rx="1" fill="#FFE0EB" opacity="0.7"/>
+    <path d="M14,-42 Q28,-38 24,-25 Q20,-16 14,-18" fill="none" stroke="#FFE0EB" stroke-width="2" stroke-opacity="0.6" stroke-linecap="round"/>
+  </g>
+
+  <!-- Second smaller note - left side -->
+  <g filter="url(#glow-n)" transform="translate(105,120)" opacity="0.5">
+    <ellipse cx="0" cy="0" rx="9" ry="6" transform="rotate(-15,0,0)" fill="#2A0A1A" stroke="#FF69B4" stroke-width="1.2"/>
+    <rect x="8" y="-32" width="2.5" height="32" rx="1" fill="#FFE0EB" opacity="0.6"/>
+    <path d="M10.5,-32 Q22,-28 19,-18 Q16,-10 10.5,-12" fill="none" stroke="#FFE0EB" stroke-width="1.5" stroke-opacity="0.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Sparkle dots -->
+  <circle cx="150" cy="80" r="2" fill="#FFE0EB" opacity="0.4"/>
+  <circle cx="260" cy="75" r="1.5" fill="#FFE0EB" opacity="0.35"/>
+  <circle cx="85" cy="210" r="1.5" fill="#FFE0EB" opacity="0.3"/>
+  <circle cx="330" cy="200" r="2" fill="#FFE0EB" opacity="0.25"/>
+  <circle cx="160" cy="290" r="1.5" fill="#FF69B4" opacity="0.3"/>
+  <circle cx="250" cy="285" r="1.8" fill="#FF69B4" opacity="0.25"/>
+
+  <!-- Divider -->
+  <line x1="120" y1="330" x2="280" y2="330" stroke="#FFE0EB" stroke-width="0.8" stroke-opacity="0.3"/>
+
+  <!-- Initials -->
+  <text x="200" y="373" text-anchor="middle" font-family="Georgia, serif" font-size="36" font-weight="bold" fill="#FFE0EB" letter-spacing="8" opacity="0.85">NM</text>
+</svg>

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="bg-victor" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#1ABC9C"/>
+      <stop offset="55%" stop-color="#0E4D92"/>
+      <stop offset="100%" stop-color="#062A52"/>
+    </radialGradient>
+    <linearGradient id="note-grad-v" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E0FFFF"/>
+      <stop offset="100%" stop-color="#1ABC9C"/>
+    </linearGradient>
+    <filter id="glow-v">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="soft-v">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" rx="20" fill="url(#bg-victor)"/>
+
+  <!-- Background decorative circles -->
+  <circle cx="200" cy="185" r="130" fill="none" stroke="#E0FFFF" stroke-width="1" stroke-opacity="0.12"/>
+  <circle cx="200" cy="185" r="110" fill="none" stroke="#E0FFFF" stroke-width="0.8" stroke-opacity="0.08"/>
+
+  <!-- Large musical note -->
+  <g filter="url(#glow-v)" transform="translate(200,180)">
+    <!-- Note head -->
+    <ellipse cx="-15" cy="55" rx="28" ry="20" transform="rotate(-20,-15,55)" fill="#0A0A2A" stroke="#1ABC9C" stroke-width="2.5"/>
+    <ellipse cx="-15" cy="55" rx="22" ry="15" transform="rotate(-20,-15,55)" fill="url(#note-grad-v)" opacity="0.2"/>
+
+    <!-- Note stem -->
+    <rect x="10" y="-70" width="4" height="125" rx="2" fill="#E0FFFF" opacity="0.85"/>
+
+    <!-- Note flag -->
+    <path d="M14,-70 Q50,-65 40,-35 Q32,-15 14,-5" fill="none" stroke="#E0FFFF" stroke-width="3" stroke-opacity="0.8" stroke-linecap="round"/>
+    <path d="M14,-55 Q45,-50 38,-25 Q30,-8 14,5" fill="none" stroke="#E0FFFF" stroke-width="2.5" stroke-opacity="0.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Star -->
+  <g filter="url(#glow-v)" transform="translate(265,95)">
+    <polygon points="0,-30 7,-10 28,-10 11,3 18,24 0,12 -18,24 -11,3 -28,-10 -7,-10"
+             fill="#0A0A2A" stroke="#1ABC9C" stroke-width="2"/>
+    <polygon points="0,-20 5,-7 19,-7 8,2 12,16 0,8 -12,16 -8,2 -19,-7 -5,-7"
+             fill="#1ABC9C" opacity="0.25"/>
+    <!-- Star highlight -->
+    <circle cx="-3" cy="-5" r="4" fill="#E0FFFF" opacity="0.2"/>
+  </g>
+
+  <!-- Small scattered stars -->
+  <g fill="#E0FFFF" opacity="0.4">
+    <polygon points="110,90 113,97 120,97 114,102 116,110 110,105 104,110 106,102 100,97 107,97" />
+    <polygon points="310,200 312,205 317,205 313,208 314,213 310,210 306,213 307,208 303,205 308,205" transform="scale(0.7)" />
+    <polygon points="130,260 132,265 137,265 133,268 134,273 130,270 126,273 127,268 123,265 128,265" transform="scale(0.6)" />
+  </g>
+
+  <!-- Sparkle dots -->
+  <circle cx="130" cy="130" r="2" fill="#E0FFFF" opacity="0.5"/>
+  <circle cx="300" cy="160" r="1.5" fill="#E0FFFF" opacity="0.35"/>
+  <circle cx="100" cy="200" r="2" fill="#E0FFFF" opacity="0.3"/>
+  <circle cx="320" cy="250" r="1.5" fill="#E0FFFF" opacity="0.25"/>
+  <circle cx="150" cy="280" r="1.8" fill="#1ABC9C" opacity="0.4"/>
+
+  <!-- Subtle wave lines -->
+  <path d="M60,300 Q130,280 200,300 Q270,320 340,300" fill="none" stroke="#1ABC9C" stroke-width="0.8" stroke-opacity="0.2"/>
+  <path d="M60,310 Q130,290 200,310 Q270,330 340,310" fill="none" stroke="#1ABC9C" stroke-width="0.6" stroke-opacity="0.15"/>
+
+  <!-- Divider -->
+  <line x1="120" y1="325" x2="280" y2="325" stroke="#E0FFFF" stroke-width="0.8" stroke-opacity="0.3"/>
+
+  <!-- Initials -->
+  <text x="200" y="370" text-anchor="middle" font-family="Georgia, serif" font-size="36" font-weight="bold" fill="#E0FFFF" letter-spacing="8" opacity="0.85">VR</text>
+</svg>
