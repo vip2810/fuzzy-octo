@@ -2,17 +2,32 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import type { Song } from "@/lib/data";
+import { useLiveSongs, type Song } from "@/lib/liveData";
 
-interface SongListProps {
-  songs: Song[];
+interface LiveSongListProps {
+  staticSongs: Song[];
   artistName: string;
+  artistId: string;
 }
 
-export default function SongList({ songs, artistName }: SongListProps) {
+export default function LiveSongList({
+  staticSongs,
+  artistName,
+  artistId,
+}: LiveSongListProps) {
+  const { songs: allSongs } = useLiveSongs(staticSongs);
+
+  // Filter songs for this artist from live data
+  const songs = allSongs
+    .filter((s) => s.artistId === artistId)
+    .sort((a, b) => a.order - b.order);
+
+  // Fall back to static songs if live data has none for this artist
+  const displaySongs = songs.length > 0 ? songs : staticSongs;
+
   return (
     <div className="space-y-2">
-      {songs.map((song, index) => (
+      {displaySongs.map((song, index) => (
         <motion.div
           key={song.id}
           initial={{ opacity: 0, x: -20 }}

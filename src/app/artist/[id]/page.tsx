@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getArtists, getArtist, getSongsByArtist } from "@/lib/data";
 import { assetPath } from "@/lib/basePath";
-import SongList from "@/components/SongList";
+import LiveSongList from "@/components/LiveSongList";
 import ArtistImage from "@/components/ArtistImage";
 import { notFound } from "next/navigation";
 
@@ -68,25 +68,20 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
           <p className="text-gray-400 text-lg leading-relaxed max-w-xl">
             {artist.description}
           </p>
-          <p className="text-sm text-gray-500 mt-3">
-            {songs.length} song{songs.length !== 1 ? "s" : ""} available
-          </p>
         </div>
       </div>
 
-      {/* Songs */}
+      {/* Songs - uses live data from GitHub API */}
       <section>
         <div className="flex items-center gap-3 mb-6">
           <div className="w-1 h-6 rounded-full bg-gradient-to-b from-accent to-accent-light" />
           <h2 className="text-xl font-bold text-white">Songs</h2>
         </div>
-        {songs.length > 0 ? (
-          <SongList songs={songs} artistName={artist.name} />
-        ) : (
-          <div className="text-center py-12 bg-card-bg/40 rounded-2xl border border-white/5">
-            <p className="text-gray-500">No songs available yet.</p>
-          </div>
-        )}
+        <LiveSongList
+          staticSongs={songs}
+          artistName={artist.name}
+          artistId={artist.id}
+        />
       </section>
     </div>
   );
