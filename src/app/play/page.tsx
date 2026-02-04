@@ -10,8 +10,10 @@ function PlayerContent() {
   const params = useSearchParams();
   const songId = params.get("s");
 
-  const { artists, loading: aLoading } = useLiveArtists([]);
-  const { songs, loading: sLoading } = useLiveSongs([]);
+  const { artists, loading: aLoading, error: aError } = useLiveArtists([]);
+  const { songs, loading: sLoading, error: sError } = useLiveSongs([]);
+
+  const fetchError = aError || sError;
 
   if (!songId) {
     return (
@@ -29,6 +31,20 @@ function PlayerContent() {
       <div className="text-center py-20">
         <div className="animate-spin w-8 h-8 border-2 border-accent border-t-transparent rounded-full mx-auto mb-4" />
         <p className="text-gray-400">Loading song...</p>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="text-center py-20">
+        <div className="max-w-md mx-auto p-6 rounded-2xl bg-red-500/10 border border-red-500/20">
+          <p className="text-red-400 font-semibold mb-2">Could not load song data</p>
+          <p className="text-red-300/70 text-sm mb-4">{fetchError}</p>
+          <Link href="/admin" className="text-accent hover:text-accent-light text-sm">
+            Go to Admin to set your GitHub token
+          </Link>
+        </div>
       </div>
     );
   }
