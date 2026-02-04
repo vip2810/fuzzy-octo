@@ -26,17 +26,9 @@ function getToken(): string | null {
   return localStorage.getItem("github_token");
 }
 
-// Simple in-memory cache to avoid redundant API calls within a session
-const cache: Record<string, { data: unknown; ts: number }> = {};
-const CACHE_TTL = 30_000; // 30 seconds
-
+// No in-memory cache - always fetch fresh from GitHub API
 async function fetchYaml<T>(path: string): Promise<{ data: T | null; error: string | null }> {
   const { owner, repo, branch } = getRepoConfig();
-  const cacheKey = `${owner}/${repo}/${branch}/${path}`;
-  const cached = cache[cacheKey];
-  if (cached && Date.now() - cached.ts < CACHE_TTL) {
-    return { data: cached.data as T, error: null };
-  }
 
   const token = getToken();
   const headers: Record<string, string> = {
@@ -47,8 +39,9 @@ async function fetchYaml<T>(path: string): Promise<{ data: T | null; error: stri
   }
 
   try {
-    const url = `${API_BASE}/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
-    const res = await fetch(url, { headers });
+    // Cache-bust: append timestamp to bypass browser HTTP cache and GitHub CDN cache
+    const url = `${API_BASE}/repos/${owner}/${repo}/contents/${path}?ref=${branch}&_=${Date.now()}`;
+    const res = await fetch(url, { headers, cache: "no-store" });
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
@@ -72,17 +65,9 @@ async function fetchYaml<T>(path: string): Promise<{ data: T | null; error: stri
     const text = new TextDecoder().decode(bytes);
     const data = yaml.load(text) as T;
 
-    cache[cacheKey] = { data, ts: Date.now() };
     return { data, error: null };
   } catch (err) {
     return { data: null, error: err instanceof Error ? err.message : "Network error" };
-  }
-}
-
-// Clear cache so next fetch gets fresh data
-export function invalidateCache() {
-  for (const key of Object.keys(cache)) {
-    delete cache[key];
   }
 }
 
